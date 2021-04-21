@@ -8,6 +8,7 @@ Investment-value calculator
 		-- Annual interest rate.
 		-- Future value.
 					=== FORMULA ===
-		futureValue = investmentAmount * (1 + monthlyInterestRate)^(year*12)
+		futureValue = investmentAmount * (1 + monthlyInterestRate)^(year*12);
+		monthlyInterestRate = (1 + annualInterestRate)^(1/12) - 1;
 
 - FRAME LAYOUT: GridBag
