@@ -9,8 +9,8 @@ public class investment_value_calc {
 	private JLabel[] label = new JLabel[4];
 	private JTextField[] textField = new JTextField[4];
 	private JButton calBtn = new JButton("Calculate");
-	
-
+	private JDialog nfExDialog = new JDialog(frame, "Exception!", true);
+	private JDialog notIntExDlg = new JDialog(frame, "Exception!", true);
 
 
 	private int investmentAmount, year;
@@ -38,7 +38,7 @@ public class investment_value_calc {
 		frame.setVisible(true);
 	}
 
-	public void addComponents() {
+	private void addComponents() {
 		GridBagConstraints gc = new GridBagConstraints();
 
 		gc.gridx = 0;
@@ -103,32 +103,59 @@ public class investment_value_calc {
 		public IsNotIntException() {}
 	}
 
-	private void getInput() {
-		
+
+
+	private void getInput() throws IsNotIntException, NumberFormatException {
+			if(!isInt(textField[0].getText()) || !isInt(textField[1].getText())) {
+				throw new IsNotIntException();
+			}
+
+			investmentAmount = Integer.parseInt(textField[0].getText());
+			year = Integer.parseInt(textField[1].getText());
+
+			annualInterestRate = Double.parseDouble(textField[2].getText());
+	}
+
+
+
+	private static boolean isInt(String str) {
+
+	  	try {
+	    	int x = Integer.parseInt(str);
+	      	return true;
+		} catch (NumberFormatException e) {
+	    	return false;
+		}
+  	
 	}
 
 	private void addEventListener() {
-        
+        calBtn.addActionListener(new calculate());
 	}
 
 	private class calculate implements ActionListener{
 		public void actionPerformed(ActionEvent e) {
-        	getInput();
+			try{
+				if(!isInt(textField[0].getText()) || !isInt(textField[1].getText())) {
+					throw new IsNotIntException();
+				}
+				getInput();
+			}
+			catch(IsNotIntException ex) {
+				createDialog1();
+			}
+			catch(NumberFormatException ex) {
+				createDialog2();
+			}
 
-        	JButton btn = (JButton) e.getSource();
-			String command = btn.getActionCommand();
+        	futureValue = futureValue(investmentAmount, annualInterestRate, year);
 
-            
+        	textField[3].setText("$" + round(futureValue, 2));
         }
 	}
 
-	private double convertInterestRate(double annualInterestRate) {
-		monthlyInterestRate = Math.pow((1 + annualInterestRate),(1/12)) - 1;
-		return monthlyInterestRate;
-	}
-
-	private double futureValue(int investmentAmount, double monthlyInterestRate, int year) {
-		futureValue = investmentAmount * Math.pow((1 + monthlyInterestRate),(year*12));
+	private double futureValue(int ivnAmnt, double air, int year) {
+		futureValue = ivnAmnt * Math.pow((1 + air), year);
 		return futureValue;
 	}
 
@@ -140,7 +167,61 @@ public class investment_value_calc {
 	    return bd.doubleValue();
 	}
 
+	private void createDialog1() {
+		nfExDialog.setSize(200, 100);
+		nfExDialog.setLocationRelativeTo(null);
+		nfExDialog.setLayout(new BorderLayout());
+		
+		JPanel panel = new JPanel();
+		JPanel panelBtn = new JPanel();
+		JButton button = new JButton("Ok");
+		panel.setLayout(new BorderLayout());
+		nfExDialog.add(panel);
+		nfExDialog.add(panelBtn, BorderLayout.SOUTH);
+		JLabel label = new JLabel("Please enter a valid interger!", JLabel.CENTER);
+		label.setAlignmentX(JLabel.CENTER_ALIGNMENT);
+		panel.add(label);
+		panelBtn.add(button);
+		button.addActionListener(new dialog1CloseAction());
+		nfExDialog.setResizable(false);
+
+		nfExDialog.setVisible(true);
+	}
+
+	private void createDialog2() {
+		notIntExDlg.setSize(200, 100);
+		notIntExDlg.setLocationRelativeTo(null);
+		notIntExDlg.setLayout(new BorderLayout());
+		
+		JPanel panel = new JPanel();
+		JPanel panelBtn = new JPanel();
+		JButton button = new JButton("Ok");
+		panel.setLayout(new BorderLayout());
+		notIntExDlg.add(panel);
+		notIntExDlg.add(panelBtn, BorderLayout.SOUTH);
+		JLabel label = new JLabel("Please enter a valid double!", JLabel.CENTER);
+		label.setAlignmentX(JLabel.CENTER_ALIGNMENT);
+		panel.add(label);
+		panelBtn.add(button);
+		button.addActionListener(new dialog2CloseAction());
+		notIntExDlg.setResizable(false);
+
+		notIntExDlg.setVisible(true);
+	}
+
+	private class dialog1CloseAction implements ActionListener{
+		public void actionPerformed(ActionEvent e) {
+            nfExDialog.dispose();
+        }
+	}
+
+	private class dialog2CloseAction implements ActionListener{
+		public void actionPerformed(ActionEvent e) {
+            notIntExDlg.dispose();
+        }
+	}
+
 	public static void main(String[] args) {
-		new investment_value_calc();
+		investment_value_calc c = new investment_value_calc();
 	}
 }
