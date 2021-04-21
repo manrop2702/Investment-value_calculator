@@ -3,10 +3,10 @@
 Investment-value calculator
 
 					 === INPUT ===
-		-- Investment amout.
-		-- Number of years.
-		-- Annual interest rate.
-		-- Future value.
+		-- Investment Amount.
+		-- Number of Years.
+		-- Annual Interest Rate.
+		-- Future Value.
 					=== FORMULA ===
 		futureValue = investmentAmount * (1 + monthlyInterestRate)^(year*12);
 		monthlyInterestRate = (1 + annualInterestRate)^(1/12) - 1;
